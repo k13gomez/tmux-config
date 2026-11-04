@@ -1,0 +1,6 @@
+*
+!.gitignore
+!.tmux.conf
+!README.md
+!tmux-url
+!tokyonight.tmux
