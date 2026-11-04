@@ -1,0 +1,1 @@
+run-shell 'style=$(cat "$HOME/.local/state/tokyonight/style" 2>/dev/null || echo night); tmux source-file -q "$HOME/.local/share/nvim/site/pack/core/opt/tokyonight.nvim/extras/tmux/tokyonight_$style.tmux" \; set -gw window-status-current-style NONE'
