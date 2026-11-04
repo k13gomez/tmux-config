@@ -1,0 +1,24 @@
+#!/bin/sh
+# Open or copy the URL a tmux right-click landed on. The menu leaves "<mouse_x> <line>" in the url-at
+# buffer rather than passing it as an argument, because run-shell would expand a #fragment as a format.
+
+data=$(tmux show-buffer -b url-at 2>/dev/null) || exit 0
+tmux delete-buffer -b url-at
+
+url=$(printf '%s\n' "${data#* }" | awk -v x="${data%% *}" '{
+  s = $0; off = 0; first = ""
+  while (match(s, /https?:\/\/[^ \t"'"'"'<>]+/)) {
+    url = substr(s, RSTART, RLENGTH); start = off + RSTART - 1; end = start + RLENGTH
+    sub(/[.,;:!?)\]]+$/, "", url)
+    if (first == "") first = url
+    if (x >= start && x < end) { print url; exit }
+    off += RSTART + RLENGTH - 1; s = substr(s, RSTART + RLENGTH)
+  }
+  if (first != "") print first
+}')
+[ -n "$url" ] || exit 0
+
+case $1 in
+  open) open "$url" ;;
+  copy) tmux set-buffer -w -- "$url" ;;
+esac
